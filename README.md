@@ -48,8 +48,7 @@
 - [ ] 同步收藏（接口不全）
 - [ ] 发私信（接口不全）
 - [ ] 查看私信（接口不全）
-- [ ] 更改下载位置时会出现闪退（待验证）
-- [ ] 准备播放时会弹回主界面（待验证）
+- [ ] 准备播放时会弹回主界面（无法重现）
 - [ ] 修复播放时跳回开头的问题（无法100%重现，原因不明）
 
 ## 常见问题
@@ -65,6 +64,8 @@ Android Studio 版本: [3.0](https://developer.android.com/studio/preview/index.
 ```
 git clone --recursive -j8 https://github.com/blackbbc/Tucao.git
 ```
+
+注意：由于`Studio 3.0`使用`google()`作为`maven库`，请自行扶墙!!!!!!!!
 
 如果使用`Windows`进行开发，由于Data Binding在Windows上存在UTF8编码问题，不能编译通过，请参考如下两个Issue自行解决：
 [#4](https://github.com/blackbbc/Tucao/issues/4) [#7](https://github.com/blackbbc/Tucao/issues/7)
