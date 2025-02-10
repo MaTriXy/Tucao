@@ -1,9 +1,9 @@
 package me.sweetll.tucao.business.personal.fragment
 
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.view.*
+import com.google.android.material.snackbar.Snackbar
 import me.sweetll.tucao.R
 import me.sweetll.tucao.base.BaseFragment
 import me.sweetll.tucao.business.personal.viewmodel.ChangeInformationViewModel
@@ -18,14 +18,14 @@ class ChangeInformationFragment : BaseFragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_change_information, container, false)
         viewModel = ChangeInformationViewModel(this)
         binding.viewModel = viewModel
         return binding.root
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -44,7 +44,7 @@ class ChangeInformationFragment : BaseFragment() {
     }
 
     fun saveSuccess() {
-        activity.supportFragmentManager.popBackStack()
+        activity!!.supportFragmentManager.popBackStack()
     }
 
     fun saveFailed(msg: String) {

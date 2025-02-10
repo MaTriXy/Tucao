@@ -7,9 +7,12 @@ import java.util.concurrent.TimeUnit
 object ApiConfig {
     const val API_KEY = "25tids8f1ew1821ed"
 
-    const val BASE_RAW_API_URL = "http://www.tucao.tv/"
-    const val BASE_JSON_API_URL = "http://www.tucao.tv/api_v2/"
-    const val BASE_XML_API_URL = "http://www.tucao.tv/"
+    const val PROTOCOL = "https"
+    const val BASE_URL = "www.tucao.cool"
+
+    const val BASE_RAW_API_URL = "$PROTOCOL://$BASE_URL/"
+    const val BASE_JSON_API_URL = "$PROTOCOL://$BASE_URL/api_v2/"
+    const val BASE_XML_API_URL = "$PROTOCOL://$BASE_URL/"
 
     /*
      * Json
@@ -18,7 +21,7 @@ object ApiConfig {
     const val SEARCH_API_URL = "search.php"
     const val VIEW_API_URL = "view.php"
     const val RANK_API_URL = "rank.php"
-    const val REPLY_API_URL = "http://www.tucao.tv/index.php?m=comment&c=index&a=ajax"
+    const val REPLY_API_URL = "$PROTOCOL://$BASE_URL/index.php?m=comment&c=index&a=ajax"
 
     const val UPDATE_API_URL = "http://45.63.54.11:12450/api/app-portal/version"
 
@@ -34,8 +37,8 @@ object ApiConfig {
     /*
      * XML
      */
-    const val PLAY_URL_API_URL = "http://api.tucao.tv/api/playurl"
-    const val DANMU_API_URL = "http://www.tucao.tv/index.php?m=mukio&c=index&a=init"
+    const val PLAY_URL_API_URL = "$PROTOCOL://api.tucao.cool/api/playurl"
+    const val DANMU_API_URL = "$PROTOCOL://$BASE_URL/index.php?m=mukio&c=index&a=init"
 
     /*
      * Raw
@@ -46,6 +49,10 @@ object ApiConfig {
     const val SEND_DANMU_URL   = "index.php?m=mukio&c=index&a=post"
     const val COMMENT_URL      = "index.php?m=comment&c=index&a=init&hot=0&iframe=1"
     const val SEND_COMMENT_URL = "index.php?m=comment&c=index&a=post"
+    const val READ_MESSAGE_LIST_URL = "index.php?m=message&c=index&a=inbox"
+    const val READ_MESSAGE_DETAIL_URL = "index.php?m=message&c=index&a=read"
+    const val REPLY_MESSAGE_URL = "index.php?m=message&c=index&a=reply"
+    const val SEND_MESSAGE_URL = "index.php?m=message&c=index&a=send"
 
     const val USER_INFO_URL  = "api.php?op=user"
     const val CODE_URL       = "api.php?op=checkcode&code_len=4&font_size=14&width=446&height=40"

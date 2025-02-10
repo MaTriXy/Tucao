@@ -1,10 +1,9 @@
 package me.sweetll.tucao.base
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.support.v7.widget.Toolbar
 import android.view.View
+import androidx.appcompat.widget.Toolbar
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.umeng.analytics.MobclickAgent
 
@@ -22,8 +21,8 @@ abstract class BaseActivity : RxAppCompatActivity() {
         }
 
         initView(savedInstanceState)
-        initToolbar()
         initStatusBar()
+        initToolbar()
     }
 
     abstract fun initView(savedInstanceState: Bundle?)
@@ -37,16 +36,14 @@ abstract class BaseActivity : RxAppCompatActivity() {
         }
     }
 
-    fun initStatusBar() {
+    open fun initStatusBar() {
         getStatusBar()?.let {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                var statusBarHeight = 0
-                val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-                if (resourceId > 0) {
-                    statusBarHeight = resources.getDimensionPixelSize(resourceId)
-                }
-                it.layoutParams.height = statusBarHeight
+            var statusBarHeight = 0
+            val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+            if (resourceId > 0) {
+                statusBarHeight = resources.getDimensionPixelSize(resourceId)
             }
+            it.layoutParams.height = statusBarHeight
         }
     }
 

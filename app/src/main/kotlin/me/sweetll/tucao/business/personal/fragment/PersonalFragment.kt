@@ -1,7 +1,7 @@
 package me.sweetll.tucao.business.personal.fragment
 
 import android.content.Intent
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -118,7 +118,7 @@ class PersonalFragment: BaseFragment(), TakePhoto.TakeResultListener, InvokeList
         EventBus.getDefault().register(this)
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         takePhoto.onSaveInstanceState(outState)
     }
@@ -134,14 +134,14 @@ class PersonalFragment: BaseFragment(), TakePhoto.TakeResultListener, InvokeList
         PermissionManager.handlePermissionsResult(activity, type, invokeParam, this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_personal, container, false)
         viewModel = PersonalViewModel(activity as PersonalActivity, this)
         binding.viewModel = viewModel
         return binding.root
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
 

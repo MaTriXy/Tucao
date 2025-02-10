@@ -1,15 +1,15 @@
 package me.sweetll.tucao.business.video.viewmodel
 
-import android.databinding.ObservableBoolean
-import android.databinding.ObservableField
+import androidx.databinding.ObservableBoolean
+import androidx.databinding.ObservableField
 import android.os.Bundle
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.SimpleItemAnimator
-import android.support.v7.widget.StaggeredGridLayoutManager
+import androidx.core.app.ActivityOptionsCompat
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import androidx.recyclerview.widget.SimpleItemAnimator
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemClickListener
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
@@ -22,6 +22,7 @@ import me.sweetll.tucao.business.video.adapter.DownloadPartAdapter
 import me.sweetll.tucao.business.video.fragment.VideoInfoFragment
 import me.sweetll.tucao.extension.DownloadHelpers
 import me.sweetll.tucao.extension.HistoryHelpers
+import me.sweetll.tucao.extension.NonNullObservableField
 import me.sweetll.tucao.extension.sanitizeHtml
 import me.sweetll.tucao.widget.CustomBottomSheetDialog
 import org.jsoup.nodes.Document
@@ -31,8 +32,8 @@ import java.util.*
 class VideoInfoViewModel(val videoInfoFragment: VideoInfoFragment): BaseViewModel() {
     val video: ObservableField<Video> = ObservableField()
     val isStar = ObservableBoolean()
-    val create = ObservableField<String>()
-    val avatar = ObservableField<String>()
+    val create = NonNullObservableField("")
+    val avatar = NonNullObservableField("")
 
     var signature = ""
     var headerBg = ""
@@ -63,7 +64,7 @@ class VideoInfoViewModel(val videoInfoFragment: VideoInfoFragment): BaseViewMode
 
     fun onClickDownload(view: View) {
         if (video.get() == null) return
-        val dialog = CustomBottomSheetDialog(videoInfoFragment.activity)
+        val dialog = CustomBottomSheetDialog(videoInfoFragment.activity!!)
         val dialogView = LayoutInflater.from(videoInfoFragment.activity).inflate(R.layout.dialog_pick_download_video, null)
         dialog.setContentView(dialogView)
 
@@ -86,7 +87,7 @@ class VideoInfoViewModel(val videoInfoFragment: VideoInfoFragment): BaseViewMode
                 p ->
                 !p.checkDownload() && p.checked
             })
-            DownloadHelpers.startDownload(videoInfoFragment.activity, video.get().copy().apply {
+            DownloadHelpers.startDownload(videoInfoFragment.activity!!, video.get()!!.copy().apply {
                 parts = checkedParts.toMutableList()
             })
             dialog.dismiss()
@@ -137,10 +138,10 @@ class VideoInfoViewModel(val videoInfoFragment: VideoInfoFragment): BaseViewMode
     fun onClickStar(view: View) {
         if (video.get() == null) return
         if (isStar.get()) {
-            HistoryHelpers.removeStar(video.get())
+            HistoryHelpers.removeStar(video.get()!!)
             isStar.set(false)
         } else {
-            HistoryHelpers.saveStar(video.get())
+            HistoryHelpers.saveStar(video.get()!!)
             isStar.set(true)
         }
     }
@@ -148,10 +149,10 @@ class VideoInfoViewModel(val videoInfoFragment: VideoInfoFragment): BaseViewMode
     fun onClickUser(view: View) {
         if (headerBg.isNotEmpty()) {
             val options: Bundle? = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    videoInfoFragment.activity,
-                    android.support.v4.util.Pair.create(view.findViewById(R.id.avatarImg),  "transition_avatar")
+                    videoInfoFragment.activity!!,
+                    androidx.core.util.Pair.create(view.findViewById(R.id.avatarImg),  "transition_avatar")
             ).toBundle()
-            UploaderActivity.intentTo(videoInfoFragment.activity, video.get().userid, video.get().user, avatar.get(), signature, headerBg, options)
+            UploaderActivity.intentTo(videoInfoFragment.activity!!, video.get()!!.userid, video.get()!!.user, avatar.get(), signature, headerBg, options)
         }
     }
 

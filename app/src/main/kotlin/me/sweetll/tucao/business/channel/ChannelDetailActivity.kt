@@ -1,12 +1,11 @@
 package me.sweetll.tucao.business.channel
 
-import android.content.Context
-import android.content.Intent
-import android.databinding.DataBindingUtil
+import android.app.Activity
 import android.os.Bundle
-import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.AdapterView
+import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
 import me.sweetll.tucao.R
 import me.sweetll.tucao.base.BaseActivity
 import me.sweetll.tucao.business.channel.adapter.ChannelFilterAdapter
@@ -15,6 +14,7 @@ import me.sweetll.tucao.business.channel.event.ChangeChannelFilterEvent
 import me.sweetll.tucao.business.channel.model.ChannelFilter
 import me.sweetll.tucao.business.channel.viewmodel.ChannelDetailViewModel
 import me.sweetll.tucao.databinding.ActivityChannelDetailBinding
+import me.sweetll.tucao.extension.startActivity
 import me.sweetll.tucao.model.json.Channel
 import org.greenrobot.eventbus.EventBus
 
@@ -30,10 +30,10 @@ class ChannelDetailActivity : BaseActivity() {
     companion object {
         private val ARG_TID = "arg_tid"
 
-        fun intentTo(context: Context, tid: Int) {
-            val intent = Intent(context, ChannelDetailActivity::class.java)
-            intent.putExtra(ARG_TID, tid)
-            context.startActivity(intent)
+        fun intentTo(activity: Activity, tid: Int) {
+            activity.startActivity<ChannelDetailActivity>{
+                putExtra(ARG_TID, tid)
+            }
         }
     }
 
@@ -42,6 +42,7 @@ class ChannelDetailActivity : BaseActivity() {
     override fun getStatusBar(): View? = binding.statusBar
 
     override fun initView(savedInstanceState: Bundle?) {
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_channel_detail)
         binding.viewModel = detailViewModel
 

@@ -1,9 +1,10 @@
 package me.sweetll.tucao.business.splash
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
+import dagger.android.AndroidInjection
 import io.reactivex.schedulers.Schedulers
 import me.sweetll.tucao.AppApplication
 
@@ -20,9 +21,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        AppApplication.get()
-                .getApiComponent()
-                .inject(this)
+        AndroidInjection.inject(this)
 
         if (!isTaskRoot
                 && intent.hasCategory(Intent.CATEGORY_LAUNCHER)

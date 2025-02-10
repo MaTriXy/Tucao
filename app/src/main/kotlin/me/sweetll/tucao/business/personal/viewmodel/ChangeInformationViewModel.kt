@@ -1,18 +1,19 @@
 package me.sweetll.tucao.business.personal.viewmodel
 
-import android.databinding.ObservableField
+import androidx.databinding.ObservableField
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import io.reactivex.schedulers.Schedulers
 import me.sweetll.tucao.base.BaseViewModel
 import me.sweetll.tucao.business.home.event.RefreshPersonalEvent
 import me.sweetll.tucao.business.personal.fragment.ChangeInformationFragment
+import me.sweetll.tucao.extension.NonNullObservableField
 import me.sweetll.tucao.extension.sanitizeHtml
 import org.greenrobot.eventbus.EventBus
 import org.jsoup.nodes.Document
 
 class ChangeInformationViewModel(val fragment: ChangeInformationFragment): BaseViewModel() {
-    val nickname = ObservableField<String>(user.name)
-    val signature = ObservableField<String>(user.signature)
+    val nickname = NonNullObservableField(user.name)
+    val signature = NonNullObservableField(user.signature)
 
     fun save() {
         rawApiService.changeInformation(nickname.get(), signature.get())

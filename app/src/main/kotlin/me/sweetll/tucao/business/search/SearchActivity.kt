@@ -6,15 +6,12 @@ import android.annotation.TargetApi
 import android.app.SharedElementCallback
 import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.TransitionRes
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v4.util.Pair
-import android.support.v4.view.animation.FastOutSlowInInterpolator
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import android.transition.*
 import android.util.SparseArray
 import android.view.View
@@ -24,6 +21,9 @@ import android.view.animation.ScaleAnimation
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
+import androidx.annotation.TransitionRes
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemChildClickListener
 import com.chad.library.adapter.base.listener.OnItemClickListener
@@ -63,8 +63,6 @@ class SearchActivity : BaseActivity() {
             context.startActivity(intent, options)
         }
     }
-
-    override fun getStatusBar(): View = binding.statusBar
 
     override fun initView(savedInstanceState: Bundle?) {
         val keyword = intent.getStringExtra(ARG_KEYWORD)
@@ -229,11 +227,11 @@ class SearchActivity : BaseActivity() {
     fun loadMoreData(data: MutableList<Video>?, flag: Int) {
         when (flag) {
             Const.LOAD_MORE_COMPLETE -> {
-                videoAdapter.addData(data)
+                videoAdapter.addData(data!!)
                 videoAdapter.loadMoreComplete()
             }
             Const.LOAD_MORE_END -> {
-                videoAdapter.addData(data)
+                videoAdapter.addData(data!!)
                 videoAdapter.loadMoreEnd()
             }
             Const.LOAD_MORE_FAIL -> {

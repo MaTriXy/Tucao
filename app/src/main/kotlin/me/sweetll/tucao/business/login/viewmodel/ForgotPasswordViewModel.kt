@@ -1,20 +1,21 @@
 package me.sweetll.tucao.business.login.viewmodel
 
-import android.databinding.ObservableField
+import androidx.databinding.ObservableField
 import android.view.View
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import io.reactivex.schedulers.Schedulers
 import me.sweetll.tucao.base.BaseViewModel
 import me.sweetll.tucao.business.login.ForgotPasswordActivity
 import me.sweetll.tucao.di.service.ApiConfig
+import me.sweetll.tucao.extension.NonNullObservableField
 import me.sweetll.tucao.extension.sanitizeHtml
 import me.sweetll.tucao.extension.toast
 import org.jsoup.nodes.Document
 
 class ForgotPasswordViewModel(val activity: ForgotPasswordActivity): BaseViewModel() {
 
-    val email = ObservableField<String>()
-    val code = ObservableField<String>()
+    val email = NonNullObservableField("")
+    val code = NonNullObservableField("")
     val codeBytes = ObservableField<ByteArray>()
 
     init {

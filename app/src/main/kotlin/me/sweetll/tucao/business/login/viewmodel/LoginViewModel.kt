@@ -1,14 +1,9 @@
 package me.sweetll.tucao.business.login.viewmodel
 
 import android.app.Activity
-import android.content.Intent
-import android.databinding.BindingAdapter
-import android.databinding.ObservableField
-import android.net.Uri
-import android.support.design.widget.Snackbar
+import androidx.databinding.ObservableField
 import android.view.View
-import android.widget.ImageView
-import com.trello.rxlifecycle2.kotlin.bind
+import com.google.android.material.snackbar.Snackbar
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -18,21 +13,20 @@ import me.sweetll.tucao.business.login.ForgotPasswordActivity
 import me.sweetll.tucao.business.login.LoginActivity
 import me.sweetll.tucao.business.login.RegisterActivity
 import me.sweetll.tucao.di.service.ApiConfig
-import me.sweetll.tucao.extension.load
-import me.sweetll.tucao.extension.sanitizeHtml
+import me.sweetll.tucao.extension.NonNullObservableField
 import me.sweetll.tucao.extension.toast
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 class LoginViewModel(val activity: LoginActivity): BaseViewModel() {
 
-    val email = ObservableField<String>()
-    val password = ObservableField<String>()
-    val code = ObservableField<String>()
+    val email = NonNullObservableField("")
+    val password = NonNullObservableField("")
+    val code = NonNullObservableField("")
     val codeBytes = ObservableField<ByteArray>()
 
-    val container = ObservableField<Int>(View.VISIBLE)
-    val progress = ObservableField<Int>(View.GONE)
+    val container = NonNullObservableField(View.VISIBLE)
+    val progress = NonNullObservableField(View.GONE)
 
     init {
         initSession()
@@ -117,10 +111,10 @@ class LoginViewModel(val activity: LoginActivity): BaseViewModel() {
 
     fun parseLoginResult(doc: Document): Pair<Int, String>{
         val content = doc.body().text()
-        if ("成功" in content) {
-            return Pair(0, "")
+        return if ("成功" in content) {
+            Pair(0, "")
         } else {
-            return Pair(1, content)
+            Pair(1, content)
         }
     }
 
@@ -142,6 +136,11 @@ class LoginViewModel(val activity: LoginActivity): BaseViewModel() {
         val index_table = doc.select("table.index_table")[0]
         val signature_td = index_table.child(0).child(2).child(0)
         user.signature = signature_td.text().removeSuffix(" 更新")
+
+        // 获取短消息
+        val message_td = index_table.child(0).child(0).child(3)
+        val message = message_td.child(0).child(0).text()
+        user.message = if (message == "--") 0 else message.toInt()
 
         // 获取
         return Object()

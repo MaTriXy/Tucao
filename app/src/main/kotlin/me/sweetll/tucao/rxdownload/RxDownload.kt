@@ -1,13 +1,14 @@
 package me.sweetll.tucao.rxdownload
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
 import io.reactivex.Observable
 import me.sweetll.tucao.model.json.Part
-import me.sweetll.tucao.rxdownload.entity.DownloadBean
 import me.sweetll.tucao.rxdownload.entity.DownloadEvent
 import me.sweetll.tucao.rxdownload.entity.DownloadMission
 import me.sweetll.tucao.rxdownload.function.DownloadService
@@ -20,6 +21,7 @@ class RxDownload {
     private var downloadService: DownloadService? = null
 
     private object Holder {
+        @SuppressLint("StaticFieldLeak")
         val INSTANCE = RxDownload()
     }
 
@@ -31,18 +33,20 @@ class RxDownload {
             if (!instance.bound) instance.ensureBind().subscribe()
             return instance
         }
-
     }
 
     private fun ensureBind(): Observable<DownloadService> {
-        return Observable.create {
-            emitter ->
-            if (bound) {
-                emitter.onNext(downloadService!!)
-                emitter.onComplete()
-            } else {
+        if (bound)
+            return Observable.just(downloadService)
+        else
+            return Observable.create {
+                emitter ->
                 val intent = Intent(context, DownloadService::class.java)
-                context.startService(intent)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
                 context.bindService(intent, object : ServiceConnection {
 
                     override fun onServiceConnected(name: ComponentName?, binder: IBinder) {
@@ -57,7 +61,6 @@ class RxDownload {
                     }
 
                 }, Context.BIND_AUTO_CREATE)
-            }
         }
     }
 

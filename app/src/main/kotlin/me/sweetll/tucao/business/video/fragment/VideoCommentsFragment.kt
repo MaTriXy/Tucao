@@ -5,26 +5,28 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.animation.FastOutSlowInInterpolator
-import android.support.v4.view.animation.LinearOutSlowInInterpolator
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.SimpleItemAnimator
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import android.transition.ArcMotion
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
+import dagger.android.AndroidInjection
+import dagger.android.support.AndroidSupportInjection
 import me.sweetll.tucao.AppApplication
 import me.sweetll.tucao.R
 import me.sweetll.tucao.base.BaseFragment
@@ -32,7 +34,6 @@ import me.sweetll.tucao.model.json.Video
 import me.sweetll.tucao.business.home.event.RefreshPersonalEvent
 import me.sweetll.tucao.business.login.LoginActivity
 import me.sweetll.tucao.business.video.ReplyActivity
-import me.sweetll.tucao.business.video.VideoActivity
 import me.sweetll.tucao.business.video.adapter.CommentAdapter
 import me.sweetll.tucao.business.video.model.Comment
 import me.sweetll.tucao.databinding.FragmentVideoCommentsBinding
@@ -72,26 +73,17 @@ class VideoCommentsFragment: BaseFragment() {
         const val REQUEST_LOGIN = 1
     }
 
-    fun getCommentFab(): FloatingActionButton = (activity as VideoActivity).getCommentFab()
-
-    fun collapse() {
-        (activity as VideoActivity).collapse()
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        AppApplication.get()
-                .getUserComponent()
-                .inject(this)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_video_comments, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         canInit = canInit or 1
         checkInit()
@@ -116,23 +108,23 @@ class VideoCommentsFragment: BaseFragment() {
         binding.commentRecycler.layoutManager = LinearLayoutManager(context)
         binding.commentRecycler.adapter = commentAdapter
         binding.commentRecycler.addItemDecoration(
-                HorizontalDividerBuilder.newInstance(context)
+                HorizontalDividerBuilder.newInstance(context!!)
                         .setDivider(R.drawable.divider_small)
                         .build()
         )
 
         commentAdapter.setOnItemClickListener{
             _, view, position ->
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
-                android.support.v4.util.Pair.create(view, "transition_background"),
-                android.support.v4.util.Pair.create(view, "transition_comment"))
-            val comment = commentAdapter.getItem(position)
-            ReplyActivity.intentTo(activity, commentId, comment, options.toBundle())
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity!!,
+                androidx.core.util.Pair.create(view, "transition_background"),
+                androidx.core.util.Pair.create(view, "transition_comment"))
+            val comment = commentAdapter.getItem(position)!!
+            ReplyActivity.intentTo(activity!!, commentId, comment, options.toBundle())
         }
         commentAdapter.setOnItemChildClickListener {
             adapter, view, position ->
             if (view.id == R.id.linear_thumb_up) {
-                val comment = commentAdapter.getItem(position)
+                val comment = commentAdapter.getItem(position)!!
                 if (!comment.support) {
                     comment.support = true
                     comment.thumbUp += 1
@@ -155,7 +147,7 @@ class VideoCommentsFragment: BaseFragment() {
         binding.clickToLoadImg.setOnClickListener {
             binding.clickToLoadImg.visibility = View.GONE
             binding.swipeRefresh.visibility = View.VISIBLE
-            getCommentFab().show()
+            binding.commentFab.show()
             loadData()
         }
         binding.swipeRefresh.setColorSchemeResources(R.color.colorPrimary)
@@ -163,16 +155,16 @@ class VideoCommentsFragment: BaseFragment() {
             loadData()
         }
 
-        getCommentFab().setOnClickListener {
+        binding.commentFab.setOnClickListener {
             if (user.isValid()) {
                 startFabTransform()
             } else {
                 val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        activity, getCommentFab(), "transition_login"
+                        activity!!, binding.commentFab, "transition_login"
                 ).toBundle()
                 val intent = Intent(activity, LoginActivity::class.java)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    FabTransform.addExtras(intent, ContextCompat.getColor(activity, R.color.colorPrimary), R.drawable.ic_comment_white)
+                    FabTransform.addExtras(intent, ContextCompat.getColor(activity!!, R.color.colorPrimary), R.drawable.ic_comment_white)
                 }
                 startActivityForResult(intent, REQUEST_LOGIN, options)
             }
@@ -229,18 +221,6 @@ class VideoCommentsFragment: BaseFragment() {
         }
     }
 
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        if (canInit != 3 || binding.commentContainer.visibility == View.VISIBLE) return
-        if (isVisibleToUser) {
-            if (binding.clickToLoadImg.visibility != View.VISIBLE) {
-                getCommentFab().show()
-            }
-        } else {
-            getCommentFab().hide()
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_LOGIN && Activity.RESULT_OK == resultCode) {
@@ -249,21 +229,20 @@ class VideoCommentsFragment: BaseFragment() {
     }
 
     fun startFabTransform() {
-        collapse()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getCommentFab().visibility = View.GONE
+            binding.commentFab.visibility = View.GONE
             binding.commentContainer.visibility = View.VISIBLE
 
-            val startBounds = Rect(getCommentFab().left, getCommentFab().top, getCommentFab().right, getCommentFab().bottom)
+            val startBounds = Rect(binding.commentFab.left, binding.commentFab.top, binding.commentFab.right, binding.commentFab.bottom)
             val endBounds = Rect(binding.commentContainer.left, binding.commentContainer.top, binding.commentContainer.right, binding.commentContainer.bottom)
 
-            val fabColor = ColorDrawable(ContextCompat.getColor(activity, R.color.pink_300))
+            val fabColor = ColorDrawable(ContextCompat.getColor(activity!!, R.color.pink_300))
             fabColor.setBounds(0, 0, endBounds.width(), endBounds.height())
             binding.commentContainer.overlay.add(fabColor)
 
             val circularReveal = ViewAnimationUtils.createCircularReveal(
                     binding.commentContainer, binding.commentContainer.width / 2, binding.commentContainer.height / 2,
-                    getCommentFab().width / 2f, binding.commentContainer.width / 2f)
+                    binding.commentFab.width / 2f, binding.commentContainer.width / 2f)
             val pathMotion = ArcMotion()
             circularReveal.interpolator = FastOutSlowInInterpolator()
             circularReveal.duration = 240
@@ -288,7 +267,7 @@ class VideoCommentsFragment: BaseFragment() {
 
             transition.start()
         } else {
-            getCommentFab().hide()
+            binding.commentFab.hide()
             binding.commentContainer.visibility = View.VISIBLE
         }
     }
